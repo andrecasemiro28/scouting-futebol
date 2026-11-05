@@ -2,7 +2,7 @@
 
 > Quem tem o perfil mais parecido com um jogador-alvo? Um sistema de scouting em Python que transforma **eventos de partida** em **perfis estatísticos** e encontra substitutos por **similaridade de cosseno**.
 
-![Perfil de Vinícius Júnior](reports/figures/pizza_vinicius_junior.png)
+![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png)
 
 ## Pergunta de negócio
 
@@ -21,7 +21,7 @@ Um clube perdeu um titular (ou não pode pagar por ele). O departamento de scout
    - *Ação progressiva:* aproxima a bola pelo menos 25% do gol adversário, começando fora do terço defensivo.
 3. **Padronização (z-score) dentro da posição**: pontas são comparados com pontas, volantes com volantes.
 4. **Similaridade de cosseno** entre os vetores de métricas, para comparar o *estilo* e não só o volume.
-5. **Visualização** com pizzas de percentis (`mplsoccer`) e gráficos de comparação.
+5. **Visualização** com barras de percentil por fase do jogo e gráficos de comparação (matplotlib).
 
 ## Resultados
 
@@ -50,7 +50,7 @@ Filtro de percentil ≥ 60 em volume de passe, precisão e passes progressivos, 
 ## Como rodar
 
 ```bash
-git clone https://github.com/<seu-usuario>/scouting-futebol.git
+git clone https://github.com/andrecasemiro28/scouting-futebol.git
 cd scouting-futebol
 pip install -r requirements.txt
 
@@ -78,7 +78,7 @@ find_similar(df, "Lamine Yamal", n=5)
     ├── download.py     # download com cache da StatsBomb Open Data
     ├── features.py     # minutos jogados + métricas por 90
     ├── similarity.py   # percentis e busca por similaridade
-    └── viz.py          # pizza, comparação e dispersão
+    └── viz.py          # perfil de percentis, comparação e dispersão
 ```
 
 ## Limitações e próximos passos
@@ -90,5 +90,5 @@ find_similar(df, "Lamine Yamal", n=5)
 
 ---
 
-**Autor:** André Casemiro, estudante de Ciência de Dados e IA (IBMEC RJ) · [LinkedIn](https://www.linkedin.com/in/<seu-linkedin>)
+**Autor:** André Casemiro, estudante de Ciência de Dados e IA (IBMEC RJ)
 Dados: StatsBomb Open Data, de uso não comercial e com atribuição.

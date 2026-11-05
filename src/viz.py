@@ -1,14 +1,13 @@
-"""Gráficos de scouting: pizza de percentis e comparação entre dois jogadores."""
+"""Gráficos de scouting: perfil em barras de percentil, comparação e dispersão."""
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from mplsoccer import PyPizza
 
 from src.similarity import LABELS, percentiles
 
-# Métricas exibidas na pizza, agrupadas por fase do jogo
-PIZZA_METRICS = {
+# Métricas exibidas no perfil, agrupadas por fase do jogo
+PROFILE_METRICS = {
     "Ataque": ["np_xg_p90", "np_shots_p90", "touches_box_p90"],
     "Criação": ["xa_p90", "key_passes_p90", "passes_into_box_p90"],
     "Progressão": ["prog_passes_p90", "prog_carries_p90", "dribbles_completed_p90"],
@@ -20,7 +19,7 @@ BG, TEXT = "#f8f7f4", "#1f2328"
 
 def _metric_lists():
     metrics, colors = [], []
-    for block, cols in PIZZA_METRICS.items():
+    for block, cols in PROFILE_METRICS.items():
         metrics += cols
         colors += [SLICE_COLORS[block]] * len(cols)
     return metrics, colors
@@ -32,33 +31,56 @@ def _pct_row(pool_df: pd.DataFrame, player: str, metrics):
     return [int(pct.loc[idx, m]) for m in metrics]
 
 
-def pizza(pool_df: pd.DataFrame, player: str, subtitle: str = "", save: str | None = None,
-          credit: str = "André Casemiro"):
-    """Pizza de percentis de um jogador contra o grupo de comparação."""
+def percentile_bars(pool_df: pd.DataFrame, player: str, save: str | None = None,
+                    credit: str = "André Casemiro"):
+    """Relatório de scouting: barras horizontais de percentil por métrica,
+    agrupadas por fase do jogo, com o valor por 90 minutos ao lado."""
     metrics, colors = _metric_lists()
-    values = _pct_row(pool_df, player, metrics)
+    pcts = _pct_row(pool_df, player, metrics)
     row = pool_df[pool_df["player"] == player].iloc[0]
 
-    baker = PyPizza(params=[LABELS[m] for m in metrics], background_color=BG,
-                    straight_line_color="#d0d0d0", last_circle_color="#bbbbbb",
-                    other_circle_color="#e2e2e2", other_circle_ls="--", inner_circle_size=18)
-    fig, ax = baker.make_pizza(
-        values, figsize=(8, 8.6), color_blank_space="same", blank_alpha=0.25,
-        slice_colors=colors, value_colors=["white"] * len(values),
-        value_bck_colors=colors, param_location=110,
-        kwargs_slices=dict(edgecolor=BG, zorder=2, linewidth=1.5),
-        kwargs_params=dict(color=TEXT, fontsize=10),
-        kwargs_values=dict(color="white", fontsize=10, zorder=3,
-                           bbox=dict(edgecolor="none", boxstyle="round,pad=0.25", lw=0)),
-    )
-    fig.text(0.5, 0.975, f"{row['player']} ({row['team']})", ha="center", size=17, weight="bold", color=TEXT)
-    fig.text(0.5, 0.945, subtitle or f"{row['minutes']} min · percentis vs. {len(pool_df)} jogadores da posição",
-             ha="center", size=10.5, color="#57606a")
-    x = 0.2
-    for block, c in SLICE_COLORS.items():
-        fig.text(x, 0.915, f"■ {block}", color=c, size=10.5, weight="bold"); x += 0.16
-    fig.text(0.5, 0.02, f"Dados: StatsBomb Open Data · Métricas por 90 minutos · {credit}",
-             ha="center", size=8.5, color="#8b949e")
+    fig, ax = plt.subplots(figsize=(9, 7.4), facecolor=BG)
+    ax.set_facecolor(BG)
+
+    # posições no eixo y com um espaço entre os blocos
+    ys, y, block_pos = [], 0, {}
+    for block, cols in PROFILE_METRICS.items():
+        block_pos[block] = y
+        for _ in cols:
+            ys.append(y); y += 1
+        y += 0.8
+    ys = [y - 1.8 - v for v in ys]  # de cima para baixo
+
+    ax.barh(ys, [100] * len(ys), color="#e7e5df", height=0.68, zorder=0)
+    ax.barh(ys, pcts, color=colors, height=0.68, zorder=1)
+    ax.axvline(50, color="#8b949e", lw=1, ls="--", zorder=2)
+
+    for yi, m, p, c in zip(ys, metrics, pcts, colors):
+        ax.text(-2, yi, LABELS[m], ha="right", va="center", size=10.5, color=TEXT)
+        inside = p >= 14
+        ax.text(p - 1.5 if inside else p + 1.5, yi, f"{p}", ha="right" if inside else "left",
+                va="center", size=10, weight="bold", color="white" if inside else c, zorder=3)
+        val = row[m]
+        ax.text(103, yi, f"{val:.2f}", ha="left", va="center", size=10, color="#57606a")
+
+    for block, cols in PROFILE_METRICS.items():
+        first = ys[metrics.index(cols[0])]
+        ax.text(-2, first + 0.85, block.upper(), ha="right", va="center", size=9.5,
+                weight="bold", color=SLICE_COLORS[block])
+
+    ax.text(103, max(ys) + 0.85, "por 90", ha="left", va="center", size=9, color="#8b949e")
+    ax.set_xlim(0, 112)
+    ax.set_ylim(min(ys) - 0.7, max(ys) + 1.4)
+    ax.set_yticks([]); ax.set_xticks([0, 25, 50, 75, 100])
+    ax.tick_params(axis="x", colors="#8b949e", labelsize=9)
+    for s_ in ("top", "right", "left", "bottom"):
+        ax.spines[s_].set_visible(False)
+
+    fig.text(0.02, 0.965, f"{row['player']} ({row['team']})", size=17, weight="bold", color=TEXT)
+    fig.text(0.02, 0.93, f"{row['position']} · {row['minutes']} min · percentil vs. {len(pool_df)} "
+             f"jogadores da posição (≥ 270 min)", size=10.5, color="#57606a")
+    fig.text(0.98, 0.012, f"Dados: StatsBomb Open Data · {credit}", ha="right", size=8.5, color="#8b949e")
+    fig.subplots_adjust(left=0.27, right=0.95, top=0.89, bottom=0.06)
     if save:
         fig.savefig(save, dpi=160, bbox_inches="tight", facecolor=BG)
     return fig
