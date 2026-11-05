@@ -1,0 +1,8 @@
+# Dados brutos da StatsBomb (~550 MB) - são baixados automaticamente
+data/raw/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.DS_Store
