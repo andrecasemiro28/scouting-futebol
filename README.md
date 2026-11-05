@@ -1,10 +1,14 @@
 # ⚽ Scouting com dados: busca de jogadores por similaridade
 
+[![Abrir no Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://scouting-futebol.streamlit.app)
+
 > Quem tem o perfil mais parecido com um jogador-alvo? Um sistema de scouting em Python que transforma **eventos de partida** em **perfis estatísticos** e encontra substitutos por **similaridade de cosseno**.
 
 ![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png)
 
 ## 🖥️ App interativo (Streamlit)
+
+**👉 Acesse aqui: [scouting-futebol.streamlit.app](https://scouting-futebol.streamlit.app)**
 
 Além do notebook, o projeto tem um **app em Streamlit** para explorar qualquer jogador: perfil de percentis, busca de similares com comparação, lista curta por filtros e dispersão interativa.
 
