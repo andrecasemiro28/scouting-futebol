@@ -2,7 +2,17 @@
 
 > Quem tem o perfil mais parecido com um jogador-alvo? Um sistema de scouting em Python que transforma **eventos de partida** em **perfis estatísticos** e encontra substitutos por **similaridade de cosseno**.
 
-![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png?v=3)
+![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png)
+
+## 🖥️ App interativo (Streamlit)
+
+Além do notebook, o projeto tem um **app em Streamlit** para explorar qualquer jogador: perfil de percentis, busca de similares com comparação, lista curta por filtros e dispersão interativa.
+
+![App Streamlit](reports/figures/app_streamlit.png)
+
+```bash
+streamlit run app.py
+```
 
 ## Pergunta de negócio
 
@@ -37,11 +47,11 @@ Um clube perdeu um titular (ou não pode pagar por ele). O departamento de scout
 
 O modelo agrupa pontas de **condução e 1x1** e deixa de fora os pontas cruzadores, o que bate com a leitura do jogo.
 
-![Comparação Vini vs Doku](reports/figures/comparacao_vinicius_similar.png?v=3)
+![Comparação Vini vs Doku](reports/figures/comparacao_vinicius_similar.png)
 
 ### 2. Centroavantes: volume de chances vs. conversão
 
-![Centroavantes](reports/figures/centroavantes_xg.png?v=3)
+![Centroavantes](reports/figures/centroavantes_xg.png)
 
 ### 3. Lista curta por filtros: volante construtor
 
@@ -54,8 +64,11 @@ git clone https://github.com/andrecasemiro28/scouting-futebol.git
 cd scouting-futebol
 pip install -r requirements.txt
 
+streamlit run app.py            # app interativo (usa a tabela já processada)
+
+# opcional: refazer a tabela do zero e abrir o notebook
 python -m src.features          # baixa os dados (~550 MB, 1x) e gera data/processed/player_stats.csv
-jupyter notebook notebooks/01_scouting_similaridade.ipynb
+pip install jupyter && jupyter notebook notebooks/01_scouting_similaridade.ipynb
 ```
 
 Uso direto em Python:
@@ -71,6 +84,7 @@ find_similar(df, "Lamine Yamal", n=5)
 ## Estrutura
 
 ```
+├── app.py                          # app Streamlit
 ├── data/processed/player_stats.csv   # tabela final: 1 linha por jogador
 ├── notebooks/01_scouting_similaridade.ipynb
 ├── reports/figures/                  # gráficos gerados
@@ -86,7 +100,6 @@ find_similar(df, "Lamine Yamal", n=5)
 - Torneios de seleções são **amostras pequenas** (3 a 7 jogos por atleta). O próximo passo é aplicar o modelo a uma temporada completa de liga.
 - **Ajuste por posse de bola** nas métricas defensivas.
 - **Clusterização de estilos** (K-Means + UMAP) para descobrir os "arquétipos" de cada posição.
-- **App em Streamlit** para a busca interativa.
 
 ---
 
