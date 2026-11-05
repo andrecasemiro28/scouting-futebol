@@ -2,7 +2,7 @@
 
 > Quem tem o perfil mais parecido com um jogador-alvo? Um sistema de scouting em Python que transforma **eventos de partida** em **perfis estatísticos** e encontra substitutos por **similaridade de cosseno**.
 
-![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png)
+![Perfil de Vinícius Júnior](reports/figures/perfil_vinicius_junior.png?v=3)
 
 ## Pergunta de negócio
 
@@ -37,11 +37,11 @@ Um clube perdeu um titular (ou não pode pagar por ele). O departamento de scout
 
 O modelo agrupa pontas de **condução e 1x1** e deixa de fora os pontas cruzadores, o que bate com a leitura do jogo.
 
-![Comparação Vini vs Doku](reports/figures/comparacao_vinicius_similar.png)
+![Comparação Vini vs Doku](reports/figures/comparacao_vinicius_similar.png?v=3)
 
 ### 2. Centroavantes: volume de chances vs. conversão
 
-![Centroavantes](reports/figures/centroavantes_xg.png)
+![Centroavantes](reports/figures/centroavantes_xg.png?v=3)
 
 ### 3. Lista curta por filtros: volante construtor
 
