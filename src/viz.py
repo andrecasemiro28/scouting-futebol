@@ -13,7 +13,8 @@ PROFILE_METRICS = {
     "Progressão": ["prog_passes_p90", "prog_carries_p90", "dribbles_completed_p90"],
     "Defesa": ["tackles_won_p90", "interceptions_p90", "pressures_p90"],
 }
-SLICE_COLORS = {"Ataque": "#2a78d6", "Criação": "#1d9e75", "Progressão": "#e09b2d", "Defesa": "#c2410c"}
+ACCENT, MUTED = "#1f5fa8", "#9aa3ad"  # uma cor de destaque + um cinza neutro
+SLICE_COLORS = {block: ACCENT for block in ["Ataque", "Criação", "Progressão", "Defesa"]}
 BG, TEXT = "#f8f7f4", "#1f2328"
 
 
@@ -66,7 +67,7 @@ def percentile_bars(pool_df: pd.DataFrame, player: str, save: str | None = None,
     for block, cols in PROFILE_METRICS.items():
         first = ys[metrics.index(cols[0])]
         ax.text(-2, first + 0.85, block.upper(), ha="right", va="center", size=9.5,
-                weight="bold", color=SLICE_COLORS[block])
+                weight="bold", color="#57606a")
 
     ax.text(103, max(ys) + 0.85, "por 90", ha="left", va="center", size=9, color="#8b949e")
     ax.set_xlim(0, 112)
@@ -90,7 +91,7 @@ def compare_bars(pool_df: pd.DataFrame, player_a: str, player_b: str, save: str 
     """Compara os percentis de dois jogadores métrica a métrica (gráfico de halteres)."""
     metrics, colors = _metric_lists()
     va, vb = _pct_row(pool_df, player_a, metrics), _pct_row(pool_df, player_b, metrics)
-    ca, cb = "#2a78d6", "#e0662d"
+    ca, cb = ACCENT, MUTED
     labels = [LABELS[m] for m in metrics][::-1]
     va, vb, colors = va[::-1], vb[::-1], colors[::-1]
     y = range(len(metrics))
@@ -102,8 +103,6 @@ def compare_bars(pool_df: pd.DataFrame, player_a: str, player_b: str, save: str 
     ax.scatter(va, y, s=110, color=ca, zorder=2, label=player_a)
     ax.scatter(vb, y, s=110, color=cb, zorder=2, label=player_b)
     ax.set_yticks(list(y), labels, color=TEXT)
-    for tick, c in zip(ax.get_yticklabels(), colors):
-        tick.set_color(c); tick.set_fontweight("bold")
     ax.set_xlim(0, 102)
     ax.set_xlabel("Percentil vs. jogadores da posição", color=TEXT)
     ax.grid(axis="x", color="#e2e2e2", ls="--")
@@ -124,7 +123,7 @@ def scatter_finishing(pool_df: pd.DataFrame, highlight: int = 8, save: str | Non
     d = pool_df.assign(diff=pool_df["np_goals"] - pool_df["np_xg"])
     fig, ax = plt.subplots(figsize=(9, 6.5), facecolor=BG)
     ax.set_facecolor(BG)
-    ax.scatter(d["np_xg_p90"], d["diff"], s=d["minutes"] / 6, color="#2a78d6", alpha=0.45, edgecolor="white")
+    ax.scatter(d["np_xg_p90"], d["diff"], s=d["minutes"] / 6, color=ACCENT, alpha=0.4, edgecolor="white")
     ax.axhline(0, color="#8b949e", lw=1, ls="--")
     top = pd.concat([d.nlargest(highlight, "np_xg_p90"), d.nlargest(3, "diff"), d.nsmallest(3, "diff")]).drop_duplicates("player_id")
     for _, r in top.iterrows():
